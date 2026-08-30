@@ -181,6 +181,90 @@ ruff format .
 git add -A && git commit -m "message" && git push
 ```
 
+### Deploy on Render
+
+#### Step 1: Push to GitHub
+
+```bash
+git add -A
+git commit -m "Ready for deployment"
+git push
+```
+
+#### Step 2: Create Web Service on Render
+
+1. Go to [render.com](https://render.com) and sign in
+2. Click **New** → **Web Service**
+3. Connect your GitHub repo: `DiyaPanjwani09/Multi-Agent-Research-system`
+
+#### Step 3: Configure Settings
+
+| Field | Value |
+|-------|-------|
+| **Name** | `researchmind` |
+| **Region** | Oregon (or closest to you) |
+| **Branch** | `main` |
+| **Runtime** | Python |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `streamlit run app.py --server.port $PORT --server.address 0.0.0.0` |
+| **Python Version** | `3.11` (or `3.10` / `3.12`) |
+
+#### Step 4: Add Environment Variables
+
+In Render dashboard → **Environment** tab, add:
+
+```
+TAVILY_API_KEY    = tvly-dev-your-key-here
+MISTRAL_API_KEY   = your-mistral-key-here
+```
+
+> **Important:** Do NOT put `.env` in your repo for Render. Use Render's Environment Variables section instead.
+
+#### Step 5: Deploy
+
+Click **Create Web Service**. Render will:
+1. Pull your repo
+2. Run `pip install -r requirements.txt`
+3. Run `streamlit run app.py --server.port $PORT --server.address 0.0.0.0`
+
+Your app will be live at: `https://researchmind.onrender.com`
+
+---
+
+#### Render CLI Commands (Optional)
+
+```bash
+# Install Render CLI
+npm install -g @anthropic-ai/render
+
+# Login
+render login
+
+# Deploy from repo
+render deploy
+
+# Check logs
+render logs --service researchmind
+
+# Set env var via CLI
+render env:set TAVILY_API_KEY=tvly-dev-xxx --service researchmind
+render env:set MISTRAL_API_KEY=xxx --service researchmind
+```
+
+#### Troubleshooting Render
+
+```bash
+# If build fails, check Python version is set to 3.11+
+# If app crashes, check logs:
+render logs --service researchmind
+
+# Common issues:
+# 1. Missing env vars → Add them in Environment tab
+# 2. Port conflict → Ensure start command uses $PORT
+# 3. Dependency errors → Pin versions in requirements.txt
+# 4. Free tier spins down after 15 min idle → Upgrade or add uptime pinger
+```
+
 ### Platform-Specific Start Commands
 
 | Platform | Start Command |
