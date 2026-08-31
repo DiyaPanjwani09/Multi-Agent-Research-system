@@ -1,6 +1,6 @@
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain.agents import create_agent
 from langchain_mistralai import ChatMistralAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from tools import web_search, scrape_url
 from dotenv import load_dotenv
@@ -14,33 +14,22 @@ llm = ChatMistralAI(
 )
 
 
-# Agent prompt template (shared base)
-def _agent_prompt(system_message: str) -> ChatPromptTemplate:
-    return ChatPromptTemplate.from_messages([
-        ("system", system_message),
-        ("human", "{input}"),
-        MessagesPlaceholder(variable_name="agent_scratchpad"),
-    ])
-
-
 # 1st Agent - Web Search Agent
 def build_search_agent():
-    prompt = _agent_prompt(
-        "You are a web search assistant. "
-        "Use the web_search tool to find recent, reliable information on the given topic."
+    return create_agent(
+        model=llm,
+        tools=[web_search],
+        system_prompt="You are a web search assistant. Use the web_search tool to find recent, reliable information on the given topic.",
     )
-    agent = create_tool_calling_agent(llm, [web_search], prompt)
-    return AgentExecutor(agent=agent, tools=[web_search], verbose=False)
 
 
 # 2nd Agent - Reader Agent
 def build_reader_agent():
-    prompt = _agent_prompt(
-        "You are a content reader and scraper. "
-        "Use the scrape_url tool to scrape and extract content from the most relevant URL."
+    return create_agent(
+        model=llm,
+        tools=[scrape_url],
+        system_prompt="You are a content reader and scraper. Use the scrape_url tool to scrape and extract content from the most relevant URL.",
     )
-    agent = create_tool_calling_agent(llm, [scrape_url], prompt)
-    return AgentExecutor(agent=agent, tools=[scrape_url], verbose=False)
 
 
 # Writer Chain
