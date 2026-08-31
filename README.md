@@ -1,6 +1,10 @@
 # ResearchMind - Multi-Agent Research System
 
+[![Live Demo](https://img.shields.io/badge/LIVE-Deployed-green)](https://researchmind-as9m.onrender.com/)
+
 A multi-agent AI system where four specialized agents collaborate to produce polished research reports on any topic. Built with LangChain, Mistral AI, and Streamlit.
+
+**Live App:** https://researchmind-as9m.onrender.com/
 
 ## Architecture
 
